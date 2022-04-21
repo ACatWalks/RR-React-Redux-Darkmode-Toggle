@@ -1,23 +1,40 @@
 import './App.css';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch, connect } from 'react-redux'
+import {fetchData, increment, decrement, custom, clear} from './features/dataSlice'
+import {useEffect} from 'react'
 
 function App() {
-  // your logic goes here!
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.data)
+
+  const renderImg = () => {
+    if(data.apiData){
+      return <img style={{'width': '100vw'}} src={data.apiData.primaryImage} alt={data.apiData.title} />
+    } else{
+      return <p>image here</p>
+    }
+  }
+
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [props.objectId, dispatch])
 
   return (
     <div className="App">
       <div>
-        <button onClick={() => {}}>Trigger Thunk</button>
-        <button onClick={() => {}}>Clear</button>
-        <button onClick={() => {}}>Next</button>
-        <button onClick={() => {}}>Back</button>
+        <button onClick={() => {dispatch(fetchData())}}>Trigger Thunk</button>
+        <button onClick={() => {dispatch(clear())}}>Clear</button>
+        <button onClick={() => {dispatch(increment())}}>Next</button>
+        <button onClick={() => {dispatch(decrement())}}>Back</button>
       </div>
-      <input onChange={(e) => { }} />
+      <input value={data.objectId} onChange={(e) => {dispatch(custom(Number(e.target.value)))}} />
       <div>
-        {/* Once you have plugged everything in, render the image here! */}
+        {data.objectId}
+        {renderImg()}
       </div>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state, ownProps) => ({objectId: state.data.objectId})
+export default connect(mapStateToProps) (App)
